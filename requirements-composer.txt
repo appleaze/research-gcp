@@ -1,0 +1,11 @@
+# PyPI Packages to install into Google Cloud Composer environment
+yfinance>=0.2.35
+scipy>=1.11.0
+beautifulsoup4>=4.12.0
+requests>=2.31.0
+holidays>=0.40
+pyarrow>=14.0.0
+db-dtypes>=1.2.0
+pypdf>=4.0.0
+pdfplumber>=0.10.0
+curl_cffi>=0.7.0

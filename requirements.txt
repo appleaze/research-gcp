@@ -1,0 +1,15 @@
+google-cloud-bigquery>=3.14.0
+google-cloud-storage>=2.14.0
+pandas>=2.0.0
+numpy>=1.24.0
+yfinance>=0.2.35
+scipy>=1.11.0
+beautifulsoup4>=4.12.0
+requests>=2.31.0
+pyarrow>=14.0.0
+db-dtypes>=1.2.0
+python-dotenv>=1.0.0
+holidays>=0.40
+plotly>=5.18.0
+nbformat>=5.9.0
+pdfplumber>=0.10.0

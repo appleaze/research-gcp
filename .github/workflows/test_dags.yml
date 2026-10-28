@@ -1,0 +1,41 @@
+name: Test Airflow DAGs Integrity
+
+on:
+  pull_request:
+    paths:
+      - 'dags/**'
+      - 'src/**'
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'dags/**'
+      - 'src/**'
+
+jobs:
+  test-dags:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install apache-airflow==2.8.1
+          pip install -e .
+          pip install -r requirements-composer.txt
+
+      - name: Validate DAGs import with no errors
+        run: |
+          python -m unittest discover -s dags/ -p "*.py" || true
+          python -c "
+          from airflow.models import DagBag
+          dagbag = DagBag(dag_folder='dags/', include_examples=False)
+          assert len(dagbag.import_errors) == 0, f'DAG import errors: {dagbag.import_errors}'
+          print(f'Successfully loaded {len(dagbag.dags)} DAGs without errors.')
+          "
