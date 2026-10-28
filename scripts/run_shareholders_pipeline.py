@@ -59,24 +59,23 @@ def step1_apply_ddls(client: bigquery.Client, repo_root: Path) -> None:
     print("[OK] Bronze table ready: idx_raw.ksei_shareholder_disclosures_raw")
 
     # 2. Silver Table DDL
-    silver_ddl_path = repo_root / "bigquery" / "schemas" / "raw" / "ksei_shareholder_ownership.sql"
+    silver_ddl_path = repo_root / "bigquery" / "silver" / "01_create_silver_tables.sql"
     with open(silver_ddl_path, "r", encoding="utf-8") as f:
         ddl_silver = f.read().replace("{project_id}", client.project)
     client.query(ddl_silver).result()
-    print("[OK] Silver table ready: idx_analytics.ksei_shareholder_ownership")
+    print("[OK] Silver tables ready: idx_analytics.ksei_shareholder_ownership & composition")
 
     # 3. Gold Marts
-    mart_breakdown_path = repo_root / "bigquery" / "marts" / "mart_complete_shareholder_breakdown.sql"
-    with open(mart_breakdown_path, "r", encoding="utf-8") as f:
-        ddl_mart_b = f.read().replace("{project_id}", client.project)
-    client.query(ddl_mart_b).result()
-    print("[OK] Gold view ready: idx_analytics.mart_complete_shareholder_breakdown")
-
-    mart_retail_path = repo_root / "bigquery" / "marts" / "mart_true_retail_dominance.sql"
-    with open(mart_retail_path, "r", encoding="utf-8") as f:
-        ddl_mart_r = f.read().replace("{project_id}", client.project)
-    client.query(ddl_mart_r).result()
-    print("[OK] Gold view ready: idx_analytics.mart_true_retail_dominance")
+    for mart_file in [
+        "mart_complete_shareholder_breakdown.sql",
+        "mart_true_float.sql",
+        "mart_true_retail.sql",
+    ]:
+        mart_path = repo_root / "bigquery" / "marts" / mart_file
+        with open(mart_path, "r", encoding="utf-8") as f:
+            ddl_mart = f.read().replace("{project_id}", client.project)
+        client.query(ddl_mart).result()
+        print(f"[OK] Gold view ready: {mart_file}")
 
 
 def step2_extract_and_ingest_bronze(client: bigquery.Client, pdf_path: Path) -> int:
